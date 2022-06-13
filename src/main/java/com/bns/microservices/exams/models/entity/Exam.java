@@ -14,6 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -33,7 +35,7 @@ public class Exam {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+	@NotEmpty
 	private String name;
 	
 	@CreationTimestamp
@@ -45,5 +47,6 @@ public class Exam {
 	private List<Question> questions = new ArrayList<>();
 	
 	@ManyToOne(fetch = FetchType.LAZY)
+	@NotNull
 	private Course course;
 }
