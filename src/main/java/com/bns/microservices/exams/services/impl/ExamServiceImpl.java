@@ -3,6 +3,8 @@ package com.bns.microservices.exams.services.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.bns.microservices.exams.models.entity.Course;
@@ -52,13 +54,13 @@ public class ExamServiceImpl implements ExamService{
 	}
 
 	@Override
-	public List<Course> findAllCourses() {
+	public Iterable<Course> findAllCourses() {
 		// TODO Auto-generated method stub
 		return courseRepository.findAll();
 	}
 
 	@Override
-	public List<Course> saveCourses(List<Course> courses) {
+	public Iterable<Course> saveCourses(List<Course> courses) {
 		// TODO Auto-generated method stub
 		return courseRepository.saveAll(courses);
 	}
@@ -73,6 +75,18 @@ public class ExamServiceImpl implements ExamService{
 	public Course saveCourse(Course courseFather) {
 		// TODO Auto-generated method stub
 		return courseRepository.save(courseFather);
+	}
+
+	@Override
+	public Page<Exam> findAll(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return examRepository.findAll(pageable);
+	}
+
+	@Override
+	public Page<Course> findAllCourses(Pageable pageable) {
+		// TODO Auto-generated method stub
+		return courseRepository.findAll(pageable);
 	}
 
 }

@@ -1,11 +1,17 @@
 package com.bns.microservices.exams.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +39,12 @@ public class ExamController {
 		return ResponseEntity.ok().body(examService.findAll());
 	}
 
+	@GetMapping("/page")
+	public ResponseEntity<?> getAllExams(Pageable pageable) {
+
+		return ResponseEntity.ok().body(examService.findAll(pageable));
+	}
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getExamById(@PathVariable("id") Long id) {
 		Optional<Exam> examOpt = examService.finById(id);
@@ -43,7 +55,10 @@ public class ExamController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> createExam(@RequestBody Exam exam) {
+	public ResponseEntity<?> createExam(@Valid @RequestBody Exam exam, BindingResult result) {
+		if(result.hasErrors()) {
+			return validate(result);
+		}
 		 List<Question> questions = new ArrayList<>();
 		 Exam e = exam;
 		exam.getQuestions().forEach(x-> {
@@ -56,7 +71,10 @@ public class ExamController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> updateExam(@RequestBody Exam exam, @PathVariable("id") Long id) {
+	public ResponseEntity<?> updateExam(@Valid @RequestBody Exam exam, BindingResult result, @PathVariable("id") Long id) {
+		if(result.hasErrors()) {
+			return validate(result);
+		}
 		Optional<Exam> examOpt = examService.finById(id);
 		if (examOpt.isEmpty()) {
 			return ResponseEntity.notFound().build();
@@ -112,7 +130,7 @@ public class ExamController {
 	@GetMapping("/get-exams-by-name/{term}")
 	public ResponseEntity<?> getExamsByName(@PathVariable("term") String term) {
 		
-		List<Exam> exams = examService.findExamByName(term);
+		List<Exam> exams = (List<Exam>) examService.findExamByName(term);
 		if (exams == null || exams.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
@@ -125,10 +143,16 @@ public class ExamController {
 		return ResponseEntity.ok().body(examService.findAllCourses());
 	}
 	
+	@GetMapping("/courses/page")
+	public ResponseEntity<?> getAllCourses(Pageable pageable) {
+
+		return ResponseEntity.ok().body(examService.findAllCourses(pageable));
+	}
+	
 	@PostMapping("/courses")
 	public ResponseEntity<?> createCourses(@RequestBody List<Course> courses) {
 
-		List<Course>  coursesDb = examService.saveCourses(courses);
+		Iterable<Course>  coursesDb = examService.saveCourses(courses);
 		return ResponseEntity.status(HttpStatus.CREATED).body(coursesDb);
 	}
 	
@@ -147,7 +171,15 @@ public class ExamController {
 			x.setFather(courseOpt.get());
 		});
 		System.out.println(courses);
-		List<Course>  coursesDb = examService.saveCourses(courses);
+		Iterable<Course>  coursesDb = examService.saveCourses(courses);
 		return ResponseEntity.status(HttpStatus.CREATED).body(coursesDb);
+	}
+	
+	private static ResponseEntity<?> validate(BindingResult result){
+		Map<String, Object> errors = new HashMap<>();
+		result.getFieldErrors().forEach(x->{
+			errors.put(x.getField(), " the field : "+ x.getDefaultMessage());
+		});
+		return ResponseEntity.badRequest().body(errors);
 	}
 }
