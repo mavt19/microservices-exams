@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -49,4 +50,6 @@ public class Exam {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@NotNull
 	private Course course;
+	@Transient
+	private boolean answered;
 }
