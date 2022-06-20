@@ -89,4 +89,10 @@ public class ExamServiceImpl implements ExamService{
 		return courseRepository.findAll(pageable);
 	}
 
+	@Override
+	public Iterable<Long> findExamenIdsWithAnswersByQuestionIds(Iterable<Long> questionsIds) {
+		// TODO Auto-generated method stub
+		return examRepository.findExamenIdsWithAnswersByQuestionIds(questionsIds);
+	}
+
 }

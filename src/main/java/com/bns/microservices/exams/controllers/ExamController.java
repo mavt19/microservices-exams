@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bns.microservices.exams.models.entity.Course;
@@ -175,6 +176,11 @@ public class ExamController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(coursesDb);
 	}
 	
+	@GetMapping("/answered-by-questions")
+	public ResponseEntity<?> answeredByQuestionsIds(@RequestParam List<Long> questionsIds){
+		List<Long> examsIds = (List<Long>) examService.findExamenIdsWithAnswersByQuestionIds(questionsIds);
+		return ResponseEntity.ok().body(examsIds );
+	}
 	private static ResponseEntity<?> validate(BindingResult result){
 		Map<String, Object> errors = new HashMap<>();
 		result.getFieldErrors().forEach(x->{

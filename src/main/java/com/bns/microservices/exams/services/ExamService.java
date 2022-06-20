@@ -32,4 +32,6 @@ public interface ExamService {
 	public Optional<Course> finCourseById(Long id);
 
 	public Course saveCourse(Course courseFather);
+	
+	public Iterable<Long> findExamenIdsWithAnswersByQuestionIds(Iterable<Long> questionsIds); 
 }
